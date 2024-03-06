@@ -16,6 +16,7 @@ import (
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-playground/form"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -34,7 +35,10 @@ func main() {
 	addr := flag.String("addr", ":4000", "HTTP network address")
 	flag.Parse()
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
-	opts := options.Client().ApplyURI("mongodb+srv://admin:root@cluster0.txanfzf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0").SetServerAPIOptions(serverAPI)
+	err := godotenv.Load("../../mongo.env")
+	uri := os.Getenv("MONGODB_URI")
+	fmt.Println(uri)
+	opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
 	client, err := mongo.Connect(context.TODO(), opts)
