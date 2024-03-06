@@ -1,0 +1,36 @@
+{{define "title"}}Accout of {{.User.Name}}{{end}} {{define "main"}}
+<h2>Accout of {{.User.Name}}</h2>
+{{with .User}}
+<table>
+    <tr>
+        <th>Name</th>
+        <td>{{.Name}}</td>
+    </tr>
+    <tr>
+        <th>Joined</th>
+        <td>{{humanDate .Created}}</td>
+    </tr>
+</table>
+<h2>Favourite posts</h2>
+
+{{if .Favourites}}
+<table>
+    <tr>
+        <th>Title</th>
+        <th>Created</th>
+        <th>Tags</th>
+        <th>Author</th>
+        <th></th>
+    </tr>
+    {{range .Favourites}}
+    <tr>
+        <td><a href='/snippet/view/{{.IDStr}}'>{{.Title}}</a></td>
+        <td>{{humanDate .Created}}</td>
+        <td>{{.Tag}}</td>
+        <td>{{.Author}}</td>
+    </tr>
+    {{end}}
+</table>
+{{else}}
+<h2>No Favourite posts...</h2>
+{{end}} {{end }} {{end}}

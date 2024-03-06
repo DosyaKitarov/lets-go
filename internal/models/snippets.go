@@ -12,7 +12,7 @@ import (
 )
 
 type Snippet struct {
-	Author  string             `bson:"Author"`
+	Author  map[string]string  `bson:"Author"`
 	IDStr   string             `bson:"idstr"`
 	ID      primitive.ObjectID `bson:"_id,omitempty"`
 	Title   string             `bson:"title"`
@@ -25,10 +25,10 @@ type SnippetModel struct {
 	Client *mongo.Client
 }
 
-func (m *SnippetModel) Insert(title, content, tag, username string) (primitive.ObjectID, error) {
+func (m *SnippetModel) Insert(title, content, tag, username, userIDStr string) (primitive.ObjectID, error) {
 	collection := m.Client.Database("snippetbox").Collection("snippets")
 	snippet := Snippet{
-		Author:  username,
+		Author:  map[string]string{username: userIDStr},
 		Title:   title,
 		Content: content,
 		Created: time.Now().UTC(),

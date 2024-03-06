@@ -31,7 +31,9 @@
         <td><a href='/snippet/view/{{.IDStr}}'>{{.Title}}</a></td>
         <td>{{humanDate .Created}}</td>
         <td>{{.Tag}}</td>
-        <td>{{.Author}}</td>
+        {{range $key, $value := .Author}}
+        <td><a href='/account/view/{{$value}}'>{{$key}}</a></td>
+        {{end}}
         <td>
             <form action='/snippet/removeFavourite/{{.IDStr}}' method='POST'>
                 <input type='hidden' name='csrf_token' value='{{$csrf}}'>

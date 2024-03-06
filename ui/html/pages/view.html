@@ -7,8 +7,8 @@
     <pre><code>{{.Content}}</code></pre>
 
     <div class='metadata'>
-        <time>Created: {{humanDate .Created}}</time>
-        <time>Author: {{.Author}}</time>
+        <time>Created: {{humanDate .Created}}</time> {{range $key, $value := .Author}}
+        <time><a href='/account/view/{{$value}}'>{{$key}}</a></time> {{end}}
     </div>
 </div>
 {{end}} {{if .IsAuthenticated}}

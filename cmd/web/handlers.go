@@ -93,7 +93,8 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 		return
 	}
 	UserName := app.sessionManager.GetString(r.Context(), "UserName")
-	ObjectID, err := app.snippets.Insert(form.Title, form.Content, form.Tag, UserName)
+	UserIDStr := app.sessionManager.GetString(r.Context(), "authenticatedUserID")
+	ObjectID, err := app.snippets.Insert(form.Title, form.Content, form.Tag, UserName, UserIDStr)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
@@ -284,4 +285,34 @@ func (app *application) accountView(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
 	data.User = user
 	app.render(w, r, http.StatusOK, "account.html", data)
+}
+func (app *application) otherAccountView(w http.ResponseWriter, r *http.Request) {
+	params := httprouter.ParamsFromContext(r.Context())
+	idStr := params.ByName("id")
+	if idStr == "" {
+		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+		return
+	}
+	if idStr == app.sessionManager.Get(r.Context(), "authenticatedUserID") {
+		http.Redirect(w, r, "/account/view", http.StatusSeeOther)
+		return
+	}
+	id, err := primitive.ObjectIDFromHex(idStr)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	user, err := app.users.Get(id)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+		} else {
+			app.serverError(w, r, err)
+		}
+		return
+	}
+	data := app.newTemplateData(r)
+	data.User = user
+	app.render(w, r, http.StatusOK, "otherAccount.html", data)
 }

@@ -36,8 +36,10 @@ func main() {
 	flag.Parse()
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	err := godotenv.Load("../../mongo.env")
+	if err != nil {
+		panic(err)
+	}
 	uri := os.Getenv("MONGODB_URI")
-	fmt.Println(uri)
 	opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
@@ -50,7 +52,7 @@ func main() {
 			panic(err)
 		}
 	}()
-	if err := client.Database("snippetbox").RunCommand(context.TODO(), bson.D{{"ping", 1}}).Err(); err != nil {
+	if err := client.Database("snippetbox").RunCommand(context.TODO(), bson.D{{Key: "ping", Value: 1}}).Err(); err != nil {
 		panic(err)
 	}
 	fmt.Println("Pinged your deployment. You successfully connected to MongoDB!")
