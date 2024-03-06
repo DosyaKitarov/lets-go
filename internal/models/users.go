@@ -102,7 +102,6 @@ func (m *UserModel) Exists(id primitive.ObjectID) (bool, error) {
 
 func (m *UserModel) Get(id primitive.ObjectID) (User, error) {
 	var user User
-
 	collection := m.Client.Database("snippetbox").Collection("users")
 	filter := bson.M{"_id": id}
 	err := collection.FindOne(context.TODO(), filter).Decode(&user)
@@ -112,7 +111,29 @@ func (m *UserModel) Get(id primitive.ObjectID) (User, error) {
 		}
 		return User{}, err
 	}
+	collection = m.Client.Database("snippetbox").Collection("snippets")
+	username := user.Name
+	filter = bson.M{"Author." + username: user.IDStr}
+	var snippets []Snippet
+	cur, err := collection.Find(context.TODO(), filter)
+	if err != nil {
+		return User{}, err
+	}
+	defer cur.Close(context.TODO())
 
+	for cur.Next(context.TODO()) {
+		var snippet Snippet
+		err := cur.Decode(&snippet)
+		if err != nil {
+			return User{}, err
+		}
+		snippets = append(snippets, snippet)
+	}
+
+	if err := cur.Err(); err != nil {
+		return User{}, err
+	}
+	user.CreatedSnippets = snippets
 	return user, nil
 }
 func (m *UserModel) AddFavourites(SnippetID primitive.ObjectID, ID primitive.ObjectID) error {
