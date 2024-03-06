@@ -4,20 +4,25 @@
     padding: 0;
     font-size: 18px;
     font-family: "Ubuntu Mono", monospace;
+    color: #FFFFFF;
 }
 
-html, body {
+html,
+body {
     height: 100%;
 }
 
 body {
     line-height: 1.5;
-    background-color: #F1F3F6;
-    color: #34495E;
+    background-color: #34495E;
+    color: #FFFFFF;
     overflow-y: scroll;
 }
 
-header, nav, main, footer {
+header,
+nav,
+main,
+footer {
     padding: 2px calc((100% - 800px) / 2) 0;
 }
 
@@ -41,11 +46,12 @@ h1 a {
 
 h1 a:hover {
     text-decoration: none;
-    color: #34495E;
+    color: #FFFFFF;
 }
 
 h2 {
     font-size: 22px;
+    margin-top: 36px;
     margin-bottom: 36px;
     position: relative;
     top: -9px;
@@ -61,16 +67,18 @@ a:hover {
     text-decoration: underline;
 }
 
-textarea, input:not([type="submit"]) {
+textarea,
+input:not([type="submit"]) {
     font-size: 18px;
     font-family: "Ubuntu Mono", monospace;
+    color: #FFFFFF;
 }
 
 header {
-    background-image: -webkit-linear-gradient(left, #34495e, #34495e 25%, #9b59b6 25%, #9b59b6 35%, #3498db 35%, #3498db 45%, #62cb31 45%, #62cb31 55%, #ffb606 55%, #ffb606 65%, #e67e22 65%, #e67e22 75%, #e74c3c 85%, #e74c3c 85%, #c0392b 85%, #c0392b 100%);
-    background-image: -moz-linear-gradient(left, #34495e, #34495e 25%, #9b59b6 25%, #9b59b6 35%, #3498db 35%, #3498db 45%, #62cb31 45%, #62cb31 55%, #ffb606 55%, #ffb606 65%, #e67e22 65%, #e67e22 75%, #e74c3c 85%, #e74c3c 85%, #c0392b 85%, #c0392b 100%);
-    background-image: -ms-linear-gradient(left, #34495e, #34495e 25%, #9b59b6 25%, #9b59b6 35%, #3498db 35%, #3498db 45%, #62cb31 45%, #62cb31 55%, #ffb606 55%, #ffb606 65%, #e67e22 65%, #e67e22 75%, #e74c3c 85%, #e74c3c 85%, #c0392b 85%, #c0392b 100%);
-    background-image: linear-gradient(to right, #34495e, #34495e 25%, #9b59b6 25%, #9b59b6 35%, #3498db 35%, #3498db 45%, #62cb31 45%, #62cb31 55%, #ffb606 55%, #ffb606 65%, #e67e22 65%, #e67e22 75%, #e74c3c 85%, #e74c3c 85%, #c0392b 85%, #c0392b 100%);
+    background-image: -webkit-linear-gradient(left, #FFFFFF, #FFFFFF 25%, #9b59b6 25%, #9b59b6 35%, #3498db 35%, #3498db 45%, #62cb31 45%, #62cb31 55%, #ffb606 55%, #ffb606 65%, #e67e22 65%, #e67e22 75%, #e74c3c 85%, #e74c3c 85%, #c0392b 85%, #c0392b 100%);
+    background-image: -moz-linear-gradient(left, #FFFFFF, #FFFFFF 25%, #9b59b6 25%, #9b59b6 35%, #3498db 35%, #3498db 45%, #62cb31 45%, #62cb31 55%, #ffb606 55%, #ffb606 65%, #e67e22 65%, #e67e22 75%, #e74c3c 85%, #e74c3c 85%, #c0392b 85%, #c0392b 100%);
+    background-image: -ms-linear-gradient(left, #FFFFFF, #FFFFFF 25%, #9b59b6 25%, #9b59b6 35%, #3498db 35%, #3498db 45%, #62cb31 45%, #62cb31 55%, #ffb606 55%, #ffb606 65%, #e67e22 65%, #e67e22 75%, #e74c3c 85%, #e74c3c 85%, #c0392b 85%, #c0392b 100%);
+    background-image: linear-gradient(to right, #FFFFFF, #FFFFFF 25%, #9b59b6 25%, #9b59b6 35%, #3498db 35%, #3498db 45%, #62cb31 45%, #62cb31 55%, #ffb606 55%, #ffb606 65%, #e67e22 65%, #e67e22 75%, #e74c3c 85%, #e74c3c 85%, #c0392b 85%, #c0392b 100%);
     background-size: 100% 6px;
     background-repeat: no-repeat;
     border-bottom: 1px solid #E4E5E7;
@@ -81,7 +89,7 @@ header {
 }
 
 header a {
-    color: #34495E;
+    color: #FFFFFF;
     text-decoration: none;
 }
 
@@ -89,9 +97,9 @@ nav {
     border-bottom: 1px solid #E4E5E7;
     padding-top: 17px;
     padding-bottom: 15px;
-    background: #F7F9FA;
+    background: #2C3E50;
     height: 60px;
-    color: #6A6C6F;
+    color: #FFFFFF;
 }
 
 nav a {
@@ -119,7 +127,7 @@ nav div:last-child a {
 }
 
 nav a.live {
-    color: #34495E;
+    color: #FFFFFF;
     cursor: default;
 }
 
@@ -135,14 +143,15 @@ nav a.live:after {
     top: 9px;
     width: 14px;
     height: 14px;
-    background: #F7F9FA;
+    background: #2C3E50;
     border-left: 1px solid #E4E5E7;
     border-bottom: 1px solid #E4E5E7;
     -moz-transform: rotate(45deg);
     -webkit-transform: rotate(-45deg);
 }
 
-a.button, input[type="submit"] {
+a.button,
+input[type="submit"] {
     background-color: #62CB31;
     border-radius: 3px;
     color: #FFFFFF;
@@ -153,7 +162,8 @@ a.button, input[type="submit"] {
     font-weight: 700;
 }
 
-a.button:hover, input[type="submit"]:hover {
+a.button:hover,
+input[type="submit"]:hover {
     background-color: #4EB722;
     color: #FFFFFF;
     cursor: pointer;
@@ -172,14 +182,19 @@ form input[type="radio"] {
     margin-left: 18px;
 }
 
-form input[type="text"], form input[type="password"], form input[type="email"] {
+form input[type="text"],
+form input[type="password"],
+form input[type="email"] {
     padding: 0.75em 18px;
     width: 100%;
 }
 
-form input[type=text], form input[type="password"], form input[type="email"], textarea {
-    color: #6A6C6F;
-    background: #FFFFFF;
+form input[type=text],
+form input[type="password"],
+form input[type="email"],
+textarea {
+    color: #FFFFFF;
+    background: #2C3E50;
     border: 1px solid #E4E5E7;
     border-radius: 3px;
 }
@@ -195,7 +210,8 @@ form label {
     display: block;
 }
 
-.error + textarea, .error + input {
+.error+textarea,
+.error+input {
     border-color: #C0392B !important;
     border-width: 2px !important;
 }
@@ -221,7 +237,7 @@ button:hover {
 }
 
 .snippet {
-    background-color: #FFFFFF;
+    background-color: #2C3E50;
     border: 1px solid #E4E5E7;
     border-radius: 3px;
 }
@@ -233,18 +249,19 @@ button:hover {
 }
 
 .snippet .metadata {
-    background-color: #F7F9FA;
-    color: #6A6C6F;
+    background-color: #34495E;
+    color: #FFFFFF;
     padding: 0.75em 18px;
     overflow: auto;
 }
 
 .snippet .metadata span {
     float: right;
+    margin-left: 190px;
 }
 
 .snippet .metadata strong {
-    color: #34495E;
+    color: #FFFFFF;
 }
 
 .snippet .metadata time {
@@ -262,7 +279,7 @@ button:hover {
 div.flash {
     color: #FFFFFF;
     font-weight: bold;
-    background-color: #34495E;
+    background-color: #2C3E50;
     padding: 18px;
     margin-bottom: 36px;
     text-align: center;
@@ -278,20 +295,22 @@ div.error {
 }
 
 table {
-    background: white;
+    background: #2C3E50;
     border: 1px solid #E4E5E7;
     border-collapse: collapse;
     width: 100%;
 }
 
-td, th {
+td,
+th {
     text-align: left;
     padding: 9px 18px;
 }
 
-th:last-child, td:last-child {
+th:last-child,
+td:last-child {
     text-align: right;
-    color: #6A6C6F;
+    color: #FFFFFF;
 }
 
 tr {
@@ -299,15 +318,15 @@ tr {
 }
 
 tr:nth-child(2n) {
-    background-color: #F7F9FA;
+    background-color: #34495E;
 }
 
 footer {
     border-top: 1px solid #E4E5E7;
     padding-top: 17px;
     padding-bottom: 15px;
-    background: #F7F9FA;
+    background: #2C3E50;
     height: 60px;
-    color: #6A6C6F;
+    color: #FFFFFF;
     text-align: center;
 }

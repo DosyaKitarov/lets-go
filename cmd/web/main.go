@@ -1,9 +1,10 @@
 package main
 
 import (
+	"context"
 	"crypto/tls"
-	"database/sql"
 	"flag"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -11,10 +12,13 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/alexedwards/scs/mysqlstore"
+	"github.com/alexedwards/scs/mongodbstore"
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-playground/form"
 	_ "github.com/go-sql-driver/mysql"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type application struct {
@@ -28,17 +32,24 @@ type application struct {
 
 func main() {
 	addr := flag.String("addr", ":4000", "HTTP network address")
-	dsn := flag.String("dsn", "web:pass@tcp(127.0.0.1:3306)/snippetbox?parseTime=true", "MySQL data source name")
 	flag.Parse()
+	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
+	opts := options.Client().ApplyURI("mongodb+srv://admin:root@cluster0.txanfzf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0").SetServerAPIOptions(serverAPI)
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
-	db, err := openDB(*dsn)
+	client, err := mongo.Connect(context.TODO(), opts)
 	if err != nil {
-		logger.Error(err.Error())
-		os.Exit(1)
+		panic(err)
 	}
-	defer db.Close()
-
+	defer func() {
+		if err = client.Disconnect(context.TODO()); err != nil {
+			panic(err)
+		}
+	}()
+	if err := client.Database("snippetbox").RunCommand(context.TODO(), bson.D{{"ping", 1}}).Err(); err != nil {
+		panic(err)
+	}
+	fmt.Println("Pinged your deployment. You successfully connected to MongoDB!")
 	templateCache, err := newTemplateCache()
 	if err != nil {
 		logger.Error(err.Error())
@@ -46,14 +57,14 @@ func main() {
 	}
 	formDecoder := form.NewDecoder()
 	sessionManager := scs.New()
-	sessionManager.Store = mysqlstore.New(db)
+	sessionManager.Store = mongodbstore.New(client.Database("snippetbox"))
 	sessionManager.Lifetime = 12 * time.Hour
 
 	sessionManager.Cookie.Secure = true
 	app := &application{
 		logger:         logger,
-		snippets:       models.SnippetModel{DB: db},
-		users:          models.UserModel{DB: db},
+		snippets:       models.SnippetModel{Client: client},
+		users:          models.UserModel{Client: client},
 		templateCache:  templateCache,
 		formDecoder:    formDecoder,
 		sessionManager: sessionManager,
@@ -79,16 +90,4 @@ func main() {
 
 	logger.Error(err.Error())
 	os.Exit(1)
-}
-func openDB(dsn string) (*sql.DB, error) {
-	db, err := sql.Open("mysql", dsn)
-	if err != nil {
-		return nil, err
-	}
-	err = db.Ping()
-	if err != nil {
-		db.Close()
-		return nil, err
-	}
-	return db, err
 }

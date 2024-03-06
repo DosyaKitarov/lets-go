@@ -4,15 +4,15 @@
 
 <head>
     <meta charset='utf-8'>
-    <title>{{template "title" .}} - Snippetbox</title>
-    <link rel='stylesheet' href='/static/css/main.css'>
-    <link rel='shortcut icon' href='/static/img/favicon.ico' type='image/x-icon'>
+    <title>{{template "title" .}} - Ai2ch</title>
+    <link rel='stylesheet' href='/static/css/main.css?v=1.6'>
+    <link rel="icon" href="/ui/static/img/logo.png" sizes="32x32">
     <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700'>
 </head>
 
 <body>
     <header>
-        <h1><a href='/'>Snippetbox</a></h1>
+        <h1><a href='/'>Ai2ch</a></h1>
     </header>
     {{template "nav" .}}
     <main>
@@ -21,7 +21,7 @@
         {{end}} {{template "main" .}}
     </main>
     <footer>
-        Powered by <a href='https://golang.org/'>Go</a> in {{.CurrentYear}}
+        Made by <a href='https://github.com/DosyaKitarov'>Dosya</a> & <a href='https://github.com/Melch1o'>Islam</a>, Powered by <a href='https://golang.org/'>Go</a> in {{.CurrentYear}}
     </footer>
     <script src="/static/js/main.js" type="text/javascript"></script>
 </body>

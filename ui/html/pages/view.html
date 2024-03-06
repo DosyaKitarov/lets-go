@@ -1,13 +1,21 @@
-{{define "title"}}Snippet #{{.Snippet.ID}}{{end}} {{define "main"}} {{with .Snippet}}
+{{define "title"}}Post #{{.Snippet.IDStr}}{{end}} {{define "main"}} {{with .Snippet}}
 <div class='snippet'>
     <div class='metadata'>
         <strong>{{.Title}}</strong>
-        <span>#{{.ID}}</span>
+        <span>{{.Tag}}</span>
     </div>
     <pre><code>{{.Content}}</code></pre>
+
     <div class='metadata'>
         <time>Created: {{humanDate .Created}}</time>
-        <time>Expires: {{humanDate .Expires}}</time>
+        <time>Author: {{.Author}}</time>
     </div>
 </div>
-{{end}} {{end}}
+{{end}} {{if .IsAuthenticated}}
+<form action='/snippet/addFavourite/{{.Snippet.IDStr}}' method='POST'>
+    <input type='hidden' name='csrf_token' value='{{.CSRFToken}}'>
+    <div>
+        <input type='submit' value='Add to favourites'>
+    </div>
+</form>
+{{end}}{{end}}

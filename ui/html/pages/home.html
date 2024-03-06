@@ -1,17 +1,19 @@
 {{define "title"}}Home{{end}} {{define "main"}}
-<h2>Latest Snippets</h2>
+<h2>Latest Posts</h2>
 {{if .Snippets}}
 <table>
     <tr>
         <th>Title</th>
         <th>Created</th>
-        <th>ID</th>
+        <th>Tags</th>
+        <th>Author</th>
     </tr>
     {{range .Snippets}}
     <tr>
-        <td><a href='/snippet/view?id={{.ID}}'>{{.Title}}</a></td>
+        <td><a href='/snippet/view/{{.IDStr}}'>{{.Title}}</a></td>
         <td>{{humanDate .Created}}</td>
-        <td>#{{.ID}}</td>
+        <td>{{.Tag}}</td>
+        <td>{{.Author}}</td>
     </tr>
     {{end}}
 </table>

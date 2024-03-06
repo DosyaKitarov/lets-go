@@ -1,0 +1,46 @@
+{{define "title"}}Your Account{{end}} {{define "main"}}
+<h2>Your Account</h2>
+{{ $csrf := .CSRFToken }} {{with .User}}
+<table>
+    <tr>
+        <th>Name</th>
+        <td>{{.Name}}</td>
+    </tr>
+    <tr>
+        <th>Email</th>
+        <td>{{.Email}}</td>
+    </tr>
+    <tr>
+        <th>Joined</th>
+        <td>{{humanDate .Created}}</td>
+    </tr>
+</table>
+<h2>Favourite posts</h2>
+
+{{if .Favourites}}
+<table>
+    <tr>
+        <th>Title</th>
+        <th>Created</th>
+        <th>Tags</th>
+        <th>Author</th>
+        <th></th>
+    </tr>
+    {{range .Favourites}}
+    <tr>
+        <td><a href='/snippet/view/{{.IDStr}}'>{{.Title}}</a></td>
+        <td>{{humanDate .Created}}</td>
+        <td>{{.Tag}}</td>
+        <td>{{.Author}}</td>
+        <td>
+            <form action='/snippet/removeFavourite/{{.IDStr}}' method='POST'>
+                <input type='hidden' name='csrf_token' value='{{$csrf}}'>
+                <input type='submit' value='Remove'>
+            </form>
+        </td>
+    </tr>
+    {{end}}
+</table>
+{{else}}
+<h2>No Favourite posts</h2>
+{{end}} {{end }} {{end}}

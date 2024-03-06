@@ -1,73 +1,91 @@
 package models
 
 import (
-	"database/sql"
+	"context"
 	"errors"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Snippet struct {
-	ID      int
-	Title   string
-	Content string
-	Created time.Time
-	Expires time.Time
+	Author  string             `bson:"Author"`
+	IDStr   string             `bson:"idstr"`
+	ID      primitive.ObjectID `bson:"_id,omitempty"`
+	Title   string             `bson:"title"`
+	Content string             `bson:"content"`
+	Created time.Time          `bson:"created"`
+	Tag     string             `bson:"tag"`
 }
 
 type SnippetModel struct {
-	DB *sql.DB
+	Client *mongo.Client
 }
 
-func (m *SnippetModel) Insert(title, content string, expires int) (int, error) {
-	stmt := `INSERT INTO snippets(title, content, created,expires)
-	 VALUES (?, ?, UTC_TIMESTAMP(), DATE_ADD(UTC_TIMESTAMP(), INTERVAL ? DAY))`
-	result, err := m.DB.Exec(stmt, title, content, expires)
-	if err != nil {
-		return 0, nil
-
+func (m *SnippetModel) Insert(title, content, tag, username string) (primitive.ObjectID, error) {
+	collection := m.Client.Database("snippetbox").Collection("snippets")
+	snippet := Snippet{
+		Author:  username,
+		Title:   title,
+		Content: content,
+		Created: time.Now().UTC(),
+		Tag:     tag,
 	}
-	id, err := result.LastInsertId()
+	result, err := collection.InsertOne(context.TODO(), snippet)
 	if err != nil {
-		return 0, nil
+		return primitive.NilObjectID, err
 	}
-	return int(id), nil
+	collection.FindOne(context.TODO(), bson.M{"_id": result.InsertedID}).Decode(&snippet)
+	ID := snippet.ID
+	IDstr := ID.Hex()
+	_, err = collection.UpdateOne(context.TODO(), bson.M{"_id": result.InsertedID}, bson.M{"$set": bson.M{"idstr": IDstr}})
+	if err != nil {
+		return primitive.NilObjectID, err
+	}
+	id := result.InsertedID.(primitive.ObjectID)
+	return id, nil
 }
-func (m *SnippetModel) Get(id int) (Snippet, error) {
-	stmt := `SELECT id, title, content, created, expires FROM snippets
-			WHERE expires > UTC_TIMESTAMP() AND id = ?`
-	row := m.DB.QueryRow(stmt, id)
-	var s Snippet
-	err := row.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
+
+func (m *SnippetModel) Get(id primitive.ObjectID) (Snippet, error) {
+	collection := m.Client.Database("snippetbox").Collection("snippets")
+	filter := bson.M{
+		"_id": id,
+	}
+	var snippet Snippet
+	err := collection.FindOne(context.TODO(), filter).Decode(&snippet)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, mongo.ErrNoDocuments) {
 			return Snippet{}, ErrNoRecord
 		} else {
 			return Snippet{}, err
 		}
 	}
-
-	return s, nil
+	return snippet, nil
 }
+
 func (m *SnippetModel) Latest() ([]Snippet, error) {
-	stmt := `SELECT id, title, content, created, expires FROM snippets
-	WHERE expires > UTC_TIMESTAMP() ORDER BY id DESC LIMIT 10`
-	row, err := m.DB.Query(stmt)
+	collection := m.Client.Database("snippetbox").Collection("snippets")
+	filter := bson.M{}
+	options := options.Find().SetSort(bson.M{"_id": -1}).SetLimit(10)
+	cur, err := collection.Find(context.TODO(), filter, options)
 	if err != nil {
 		return nil, err
 	}
-	defer row.Close()
+	defer cur.Close(context.TODO())
 	var snippets []Snippet
-	for row.Next() {
-		var s Snippet
-		err = row.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
+	for cur.Next(context.TODO()) {
+		var snippet Snippet
+		err := cur.Decode(&snippet)
 		if err != nil {
 			return nil, err
 		}
-		snippets = append(snippets, s)
+		snippets = append(snippets, snippet)
 	}
-	if err = row.Err(); err != nil {
+	if err := cur.Err(); err != nil {
 		return nil, err
 	}
-
 	return snippets, nil
 }

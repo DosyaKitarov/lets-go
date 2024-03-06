@@ -1,4 +1,4 @@
-{{define "title"}}Create a New Snippet{{end}} {{define "main"}}
+{{define "title"}}Create a New Post{{end}} {{define "main"}}
 <form action='/snippet/create' method='POST'>
     <input type='hidden' name='csrf_token' value='{{.CSRFToken}}'>
     <div>
@@ -12,11 +12,9 @@
         <textarea name='content'>{{.Form.Content}}</textarea>
     </div>
     <div>
-        <label>Delete in:</label> {{with .Form.FieldErrors.expires}}
+        <label>Tag:</label> {{with .Form.FieldErrors.tag}}
         <label class='error'>{{.}}</label> {{end}}
-        <input type='radio' name='expires' value='365' {{if (eq .Form.Expires 365)}}checked{{end}}> One Year
-        <input type='radio' name='expires' value='7' {{if (eq .Form.Expires 7)}}checked{{end}}> One Week
-        <input type='radio' name='expires' value='1' {{if (eq .Form.Expires 1)}}checked{{end}}> One Day
+        <input type='text' name='tag' value='{{.Form.Tag}}'>
     </div>
     <div>
         <input type='submit' value='Publish snippet'>

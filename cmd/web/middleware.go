@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/justinas/nosurf"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func secureHeaders(next http.Handler) http.Handler {
@@ -48,6 +49,7 @@ func (app *application) recoverPanic(next http.Handler) http.Handler {
 func (app *application) requireAuthentication(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !app.isAuthenticated(r) {
+			fmt.Println("not authenticated")
 			http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 			return
 		}
@@ -68,14 +70,20 @@ func noSurf(next http.Handler) http.Handler {
 
 func (app *application) authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		id := app.sessionManager.GetInt(r.Context(), "authenticatedUserID")
-		if id == 0 {
+		idStr := app.sessionManager.GetString(r.Context(), "authenticatedUserID")
+		if idStr == "" {
 			next.ServeHTTP(w, r)
+			return
+		}
+		id, err := primitive.ObjectIDFromHex(idStr)
+		if err != nil {
+			app.serverError(w, r, err)
 			return
 		}
 		exists, err := app.users.Exists(id)
 		if err != nil {
 			app.serverError(w, r, err)
+			return
 		}
 		if exists {
 			ctx := context.WithValue(r.Context(), isAuthenticatedContextKey, true)
