@@ -12,13 +12,14 @@ import (
 )
 
 type Snippet struct {
-	Author  map[string]string  `bson:"Author"`
-	IDStr   string             `bson:"idstr"`
-	ID      primitive.ObjectID `bson:"_id,omitempty"`
-	Title   string             `bson:"title"`
-	Content string             `bson:"content"`
-	Created time.Time          `bson:"created"`
-	Tag     string             `bson:"tag"`
+	Author     map[string]string  `bson:"Author"`
+	IDStr      string             `bson:"idstr"`
+	ID         primitive.ObjectID `bson:"_id,omitempty"`
+	Title      string             `bson:"title"`
+	Content    string             `bson:"content"`
+	Created    time.Time          `bson:"created"`
+	Tag        string             `bson:"tag"`
+	Favourited int                `bson:"favourited"`
 }
 
 type SnippetModel struct {
@@ -46,6 +47,16 @@ func (m *SnippetModel) Insert(title, content, tag, username, userIDStr string) (
 		return primitive.NilObjectID, err
 	}
 	id := result.InsertedID.(primitive.ObjectID)
+
+	collection = m.Client.Database("snippetbox").Collection("users")
+	filter := bson.M{
+		"idstr": userIDStr,
+	}
+	_, err = collection.UpdateOne(context.TODO(), filter, bson.M{"$push": bson.M{"created_snippets": snippet}})
+	if err != nil {
+		return primitive.NilObjectID, err
+	}
+
 	return id, nil
 }
 

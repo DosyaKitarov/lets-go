@@ -44,5 +44,27 @@
     {{end}}
 </table>
 {{else}}
-<h2>No Favourite posts</h2>
+<h2>Created posts</h2>
+{{end}} {{if .CreatedSnippets}}
+<table>
+    <tr>
+        <th>Title</th>
+        <th>Created</th>
+        <th>Tags</th>
+        <th>Author</th>
+        <th></th>
+    </tr>
+    {{range .CreatedSnippets}}
+    <tr>
+        <td><a href='/snippet/view/{{.IDStr}}'>{{.Title}}</a></td>
+        <td>{{humanDate .Created}}</td>
+        <td>{{.Tag}}</td>
+        {{range $key, $value := .Author}}
+        <td><a href='/account/view/{{$value}}'>{{$key}}</a></td>
+        {{end}}
+    </tr>
+    {{end}}
+</table>
+{{else}}
+<h2>You didn't write any post</h2>
 {{end}} {{end }} {{end}}

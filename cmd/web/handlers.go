@@ -159,7 +159,7 @@ func (app *application) FavouriteDelete(w http.ResponseWriter, r *http.Request) 
 		app.serverError(w, r, err)
 		return
 	}
-	err = app.users.RemoveFavourites(Snippet, UserID)
+	err = app.users.RemoveFavourites(Snippet, SnippetID, UserID)
 	if err != nil {
 		app.serverError(w, r, err)
 		return

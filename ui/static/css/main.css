@@ -57,6 +57,10 @@ h2 {
     top: -9px;
 }
 
+h3 {
+    color: yellow;
+}
+
 a {
     color: #62CB31;
     text-decoration: none;

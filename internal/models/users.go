@@ -20,13 +20,14 @@ type UserModelInterface interface {
 }
 
 type User struct {
-	IDStr          string             `bson:"idstr"`
-	ID             primitive.ObjectID `bson:"_id,omitempty"`
-	Name           string             `bson:"name"`
-	Email          string             `bson:"email"`
-	HashedPassword string             `bson:"hashed_password"`
-	Created        time.Time          `bson:"created"`
-	Favourites     []Snippet          `bson:"favourites"`
+	IDStr           string             `bson:"idstr"`
+	ID              primitive.ObjectID `bson:"_id,omitempty"`
+	Name            string             `bson:"name"`
+	Email           string             `bson:"email"`
+	HashedPassword  string             `bson:"hashed_password"`
+	Created         time.Time          `bson:"created"`
+	Favourites      []Snippet          `bson:"favourites"`
+	CreatedSnippets []Snippet          `bson:"created_snippets"`
 }
 
 type UserModel struct {
@@ -41,11 +42,12 @@ func (m *UserModel) Insert(name, email, password string) error {
 
 	collection := m.Client.Database("snippetbox").Collection("users")
 	user := bson.M{
-		"name":            name,
-		"email":           email,
-		"hashed_password": hashedPassword,
-		"created":         time.Now().UTC(),
-		"favourites":      []Snippet{},
+		"name":             name,
+		"email":            email,
+		"hashed_password":  hashedPassword,
+		"created":          time.Now().UTC(),
+		"favourites":       []Snippet{},
+		"created_snippets": []Snippet{},
 	}
 
 	result, err := collection.InsertOne(context.TODO(), user)
@@ -124,12 +126,16 @@ func (m *UserModel) AddFavourites(SnippetID primitive.ObjectID, ID primitive.Obj
 			return err
 		}
 	} else {
-		return errors.New("Post is already in favourites")
+		return errors.New("post is already in favourites")
 	}
 
 	collection = m.Client.Database("snippetbox").Collection("snippets")
 	filter := bson.M{"_id": SnippetID}
 	var Snippet Snippet
+	_, err = collection.UpdateOne(context.TODO(), filter, bson.M{"$inc": bson.M{"favourited": 1}})
+	if err != nil {
+		return err
+	}
 	err = collection.FindOne(context.TODO(), filter).Decode(&Snippet)
 	if err != nil {
 		return err
@@ -143,9 +149,15 @@ func (m *UserModel) AddFavourites(SnippetID primitive.ObjectID, ID primitive.Obj
 
 	return nil
 }
-func (m *UserModel) RemoveFavourites(Snippet Snippet, ID primitive.ObjectID) error {
-	collection := m.Client.Database("snippetbox").Collection("users")
-	_, err := collection.UpdateOne(context.TODO(), bson.M{"_id": ID}, bson.M{"$pull": bson.M{"favourites": Snippet}})
+func (m *UserModel) RemoveFavourites(Snippet Snippet, SnippetID primitive.ObjectID, ID primitive.ObjectID) error {
+	collection := m.Client.Database("snippetbox").Collection("snippets")
+	filter := bson.M{"_id": SnippetID}
+	_, err := collection.UpdateOne(context.TODO(), filter, bson.M{"$inc": bson.M{"favourited": -1}})
+	if err != nil {
+		return err
+	}
+	collection = m.Client.Database("snippetbox").Collection("users")
+	_, err = collection.UpdateOne(context.TODO(), bson.M{"_id": ID}, bson.M{"$pull": bson.M{"favourites": Snippet}})
 	if err != nil {
 		return err
 	}
