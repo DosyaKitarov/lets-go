@@ -228,7 +228,7 @@ func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
 		app.render(w, r, http.StatusUnprocessableEntity, "login.html", data)
 		return
 	}
-	ObjectID, err, name := app.users.Authenticate(form.Email, form.Password)
+	ObjectID, name, err := app.users.Authenticate(form.Email, form.Password)
 	id := ObjectID.Hex()
 	if err != nil {
 		if errors.Is(err, models.ErrInvalidCredentials) {

@@ -66,7 +66,7 @@ func (m *UserModel) Insert(name, email, password string) error {
 	}
 	return nil
 }
-func (m *UserModel) Authenticate(email, password string) (primitive.ObjectID, error, string) {
+func (m *UserModel) Authenticate(email, password string) (primitive.ObjectID, string, error) {
 	var user User
 
 	collection := m.Client.Database("snippetbox").Collection("users")
@@ -74,20 +74,20 @@ func (m *UserModel) Authenticate(email, password string) (primitive.ObjectID, er
 	err := collection.FindOne(context.TODO(), filter).Decode(&user)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return primitive.NilObjectID, ErrInvalidCredentials, ""
+			return primitive.NilObjectID, "", ErrInvalidCredentials
 		}
-		return primitive.NilObjectID, err, ""
+		return primitive.NilObjectID, "", err
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(password))
 	if err != nil {
 		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-			return primitive.NilObjectID, ErrInvalidCredentials, ""
+			return primitive.NilObjectID, "", ErrInvalidCredentials
 		}
-		return primitive.NilObjectID, err, ""
+		return primitive.NilObjectID, "", err
 	}
 
-	return user.ID, nil, user.Name
+	return user.ID, user.Name, nil
 }
 
 func (m *UserModel) Exists(id primitive.ObjectID) (bool, error) {
