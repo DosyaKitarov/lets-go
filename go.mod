@@ -10,6 +10,7 @@ require (
 	github.com/alexedwards/scs/v2 v2.7.0 // indirect
 	github.com/go-playground/form v3.1.4+incompatible // indirect
 	github.com/golang/snappy v0.0.4 // indirect
+	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/julienschmidt/httprouter v1.3.0 // indirect
 	github.com/justinas/alice v1.2.0 // indirect
 	github.com/justinas/nosurf v1.1.1 // indirect
