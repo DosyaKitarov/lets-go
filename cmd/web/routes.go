@@ -27,7 +27,7 @@ func (app *application) routes() http.Handler {
 	protected := dynamic.Append(app.requireAuthentication)
 	router.Handler(http.MethodPost, "/snippet/addFavourite/:id", dynamic.ThenFunc(app.FavouritePost))
 	router.Handler(http.MethodPost, "/snippet/removeFavourite/:id", dynamic.ThenFunc(app.FavouriteDelete))
-
+	router.Handler(http.MethodPost, "/snippet/addCommentary/:id", dynamic.ThenFunc(app.CommentaryPost))
 	router.Handler(http.MethodGet, "/snippet/create", protected.ThenFunc(app.snippetCreate))
 	router.Handler(http.MethodGet, "/account/view", protected.ThenFunc(app.accountView))
 	router.Handler(http.MethodGet, "/account/view/:id", protected.ThenFunc(app.otherAccountView))

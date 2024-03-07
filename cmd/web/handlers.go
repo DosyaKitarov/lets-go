@@ -31,6 +31,12 @@ type userLoginForm struct {
 	validator.Validator `form:"-"`
 }
 
+type commentaryForm struct {
+	Author              map[string]string `form:"author"`
+	Content             string            `form:"content"`
+	validator.Validator `form:"-"`
+}
+
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)
@@ -45,9 +51,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
 	data.Snippets = snippets
 	app.render(w, r, http.StatusOK, "home.html", data)
-
 }
-
 func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 	params := httprouter.ParamsFromContext(r.Context())
 	idStr := params.ByName("id")
@@ -68,6 +72,7 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 	}
 	data := app.newTemplateData(r)
 	data.Snippet = snippet
+	data.Form = commentaryForm{}
 	app.render(w, r, http.StatusOK, "view.html", data)
 }
 func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
@@ -167,6 +172,40 @@ func (app *application) FavouriteDelete(w http.ResponseWriter, r *http.Request) 
 	app.sessionManager.Put(r.Context(), "flash", "Post removed succesfuly!")
 	http.Redirect(w, r, "/account/view", http.StatusSeeOther)
 
+}
+func (app *application) CommentaryPost(w http.ResponseWriter, r *http.Request) {
+	var form commentaryForm
+	err := app.decodePostForm(r, &form)
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+	form.CheckField(validator.NotBlank(form.Content), "content", "This field cannot be blank")
+	if !form.Valid() {
+		data := app.newTemplateData(r)
+		data.Form = form
+		app.render(w, r, http.StatusUnprocessableEntity, "view.html", data)
+		return
+	}
+	params := httprouter.ParamsFromContext(r.Context())
+	SnippetIDStr := params.ByName("id")
+	SnippetID, err := primitive.ObjectIDFromHex(SnippetIDStr)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+	Author := map[string]string{
+		app.sessionManager.GetString(r.Context(), "UserName"): app.sessionManager.GetString(r.Context(), "authenticatedUserID"),
+	}
+
+	form.Author = Author
+	err = app.commentary.AddComentary(SnippetID, form.Author, form.Content)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+	app.sessionManager.Put(r.Context(), "flash", "Comment added succesfuly!")
+	http.Redirect(w, r, fmt.Sprintf("/snippet/view/%s", SnippetIDStr), http.StatusSeeOther)
 }
 
 func (app *application) userSignup(w http.ResponseWriter, r *http.Request) {

@@ -11,12 +11,34 @@
         <time><a href='/account/view/{{$value}}'>{{$key}}</a></time> {{end}}
     </div>
 </div>
-{{end}} {{if .IsAuthenticated}}
+{{end}}
+<h3>Favourite: {{.Snippet.Favourited}}</h3> {{if .IsAuthenticated}}
 <form action='/snippet/addFavourite/{{.Snippet.IDStr}}' method='POST'>
     <input type='hidden' name='csrf_token' value='{{.CSRFToken}}'>
     <div>
         <input type='submit' value='Add to favourites'>
     </div>
 </form>
+<form action='/snippet/addCommentary/{{.Snippet.IDStr}}' method='POST'>
+    <input type='hidden' name='csrf_token' value='{{.CSRFToken}}'>
+    <div>
+        <label>Content:</label> {{with .Form.FieldErrors.content}}
+        <label class='error'>{{.}}</label> {{end}}
+        <textarea name='content'>{{.Form.Content}}</textarea>
+    </div>
+    <div>
+        <input type='submit' value='Publish commentary'>
+    </div>
+</form>
 {{end}}
-<h3>Added: {{.Snippet.Favourited}}</h3>{{end}}
+<h1>Commentaries:</h1>{{if .Snippet.Commentaries}} {{range .Snippet.Commentaries}}
+<div class='snippet'>
+    <pre><code>{{.Content}}</code></pre>
+    <div class='metadata'>
+        <time>Created: {{humanDate .Created}}</time> {{range $key, $value := .Author}}
+        <time><a href='/account/view/{{$value}}'>{{$key}}</a></time> {{end}}
+    </div>
+</div> {{end}} {{else}}
+<h3>No comments</h3>
+
+{{end}} {{end}}

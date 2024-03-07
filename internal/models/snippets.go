@@ -12,14 +12,15 @@ import (
 )
 
 type Snippet struct {
-	Author     map[string]string  `bson:"Author"`
-	IDStr      string             `bson:"idstr"`
-	ID         primitive.ObjectID `bson:"_id,omitempty"`
-	Title      string             `bson:"title"`
-	Content    string             `bson:"content"`
-	Created    time.Time          `bson:"created"`
-	Tag        string             `bson:"tag"`
-	Favourited int                `bson:"favourited"`
+	Author       map[string]string  `bson:"Author"`
+	IDStr        string             `bson:"idstr"`
+	ID           primitive.ObjectID `bson:"_id,omitempty"`
+	Title        string             `bson:"title"`
+	Content      string             `bson:"content"`
+	Created      time.Time          `bson:"created"`
+	Tag          string             `bson:"tag"`
+	Favourited   int                `bson:"favourited"`
+	Commentaries []Commentary       `bson:"commentaries"`
 }
 
 type SnippetModel struct {
@@ -29,11 +30,12 @@ type SnippetModel struct {
 func (m *SnippetModel) Insert(title, content, tag, username, userIDStr string) (primitive.ObjectID, error) {
 	collection := m.Client.Database("snippetbox").Collection("snippets")
 	snippet := Snippet{
-		Author:  map[string]string{username: userIDStr},
-		Title:   title,
-		Content: content,
-		Created: time.Now().UTC(),
-		Tag:     tag,
+		Author:       map[string]string{username: userIDStr},
+		Title:        title,
+		Content:      content,
+		Created:      time.Now().UTC(),
+		Tag:          tag,
+		Commentaries: []Commentary{},
 	}
 	result, err := collection.InsertOne(context.TODO(), snippet)
 	if err != nil {

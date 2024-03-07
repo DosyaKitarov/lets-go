@@ -1,5 +1,6 @@
 package main
 
+//ngrok http --domain=humane-titmouse-pure.ngrok-free.app https://localhost:4000/
 import (
 	"context"
 	"crypto/tls"
@@ -26,6 +27,7 @@ type application struct {
 	logger         *slog.Logger
 	snippets       models.SnippetModel
 	users          models.UserModel
+	commentary     models.CommentaryModel
 	templateCache  map[string]*template.Template
 	formDecoder    *form.Decoder
 	sessionManager *scs.SessionManager
@@ -71,6 +73,7 @@ func main() {
 		logger:         logger,
 		snippets:       models.SnippetModel{Client: client},
 		users:          models.UserModel{Client: client},
+		commentary:     models.CommentaryModel{Client: client},
 		templateCache:  templateCache,
 		formDecoder:    formDecoder,
 		sessionManager: sessionManager,
